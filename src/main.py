@@ -67,7 +67,7 @@ class MyAssistant(object):
         aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=10)
 
     def play_youtube(self):
-        aiy.audio.say("OK")
+        aiy.audio.say("OK", volume=10, pitch=1)
         self._if_vlc = True
         # mpv --vid no --ytdl
         playshell = subprocess.Popen(["mpv",

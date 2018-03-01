@@ -68,8 +68,11 @@ class MyAssistant(object):
 
     def play_youtube(self):
         self._if_vlc = True
-        playshell = subprocess.Popen(["cvlc",
-                                      #"--preferred-resolution", "480",
+        # mpv --vid no --ytdl
+        playshell = subprocess.Popen(["mpv",
+                                      "--vid",
+                                      "no",
+                                      "--ytdl",
                                       "https://www.youtube.com/watch?v=QYT8WYdPJYo"],
                                      stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE)

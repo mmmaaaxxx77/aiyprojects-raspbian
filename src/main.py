@@ -62,7 +62,7 @@ class MyAssistant(object):
 
     def say_ip(self):
         ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
-        aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=90)
+        aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=10)
 
     def _run_task(self):
         credentials = aiy.assistant.auth_helpers.get_assistant_credentials()
@@ -90,7 +90,8 @@ class MyAssistant(object):
             print('You said:', event.args['text'])
             text = event.args['text'].lower()
             if text == 'ip address':
-                self._assistant.stop_conversation()
+                self._can_start_conversation = False
+                # self._assistant.stop_conversation()
                 self.say_ip()
 
         elif event.type == EventType.ON_END_OF_UTTERANCE:

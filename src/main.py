@@ -107,7 +107,6 @@ class MyAssistant(object):
                 self._assistant.stop_conversation()
                 self.say_ip()
             elif text == 'play youtube':
-                print("cancel youtube")
                 self._can_start_conversation = False
                 self._assistant.stop_conversation()
                 self.play_youtube()
@@ -138,6 +137,7 @@ class MyAssistant(object):
             self._assistant.start_conversation()
 
         if self._if_vlc:
+            print("button cancel youtube")
             pkill = subprocess.Popen(["/usr/bin/pkill", "mpv"], stdin=subprocess.PIPE)
             self._if_vlc = False
 

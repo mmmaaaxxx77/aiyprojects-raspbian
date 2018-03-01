@@ -91,7 +91,7 @@ class MyAssistant(object):
             text = event.args['text'].lower()
             if text == 'ip address':
                 self._can_start_conversation = False
-                # self._assistant.stop_conversation()
+                self._assistant.stop_conversation()
                 self.say_ip()
 
         elif event.type == EventType.ON_END_OF_UTTERANCE:

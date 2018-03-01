@@ -62,7 +62,7 @@ class MyAssistant(object):
 
     def say_ip(self):
         ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
-        aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=90)
+        aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=10)
 
     def _run_task(self):
         credentials = aiy.assistant.auth_helpers.get_assistant_credentials()

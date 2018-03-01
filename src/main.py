@@ -76,6 +76,7 @@ class MyAssistant(object):
                                       "https://www.youtube.com/watch?v=QYT8WYdPJYo"],
                                      stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE)
+        playshell.wait()
 
     def _run_task(self):
         credentials = aiy.assistant.auth_helpers.get_assistant_credentials()

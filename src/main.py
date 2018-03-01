@@ -70,6 +70,8 @@ class MyAssistant(object):
         self._if_vlc = True
         # mpv --vid no --ytdl
         playshell = subprocess.Popen(["mpv",
+                                      "--volume",
+                                      aiy.audio.get_tts_volume(),
                                       "--vid",
                                       "no",
                                       "--ytdl",

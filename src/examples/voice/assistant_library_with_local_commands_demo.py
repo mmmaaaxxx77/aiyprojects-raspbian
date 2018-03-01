@@ -66,13 +66,8 @@ def process_event(assistant, event):
     elif event.type == EventType.ON_RECOGNIZING_SPEECH_FINISHED and event.args:
         print('You said:', event.args['text'])
         text = event.args['text'].lower()
-        if text == 'power off':
-            assistant.stop_conversation()
-            power_off_pi()
-        elif text == 'reboot':
-            assistant.stop_conversation()
-            reboot_pi()
-        elif text == 'ip address':
+
+        if text == 'ip address':
             assistant.stop_conversation()
             say_ip()
 

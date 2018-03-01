@@ -71,7 +71,7 @@ class MyAssistant(object):
         # mpv --vid no --ytdl
         playshell = subprocess.Popen(["mpv",
                                       "--volume",
-                                      aiy.audio.get_tts_volume(),
+                                      "{}".format(aiy.audio.get_tts_volume()),
                                       "--vid",
                                       "no",
                                       "--ytdl",

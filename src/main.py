@@ -120,11 +120,6 @@ class MyAssistant(object):
             status_ui.status('ready')
             self._can_start_conversation = True
 
-            if self._if_vlc:
-                print("cancel youtube")
-                pkill = subprocess.Popen(["/usr/bin/pkill", "mpv"], stdin=subprocess.PIPE)
-                self._if_vlc = False
-
         elif event.type == EventType.ON_ASSISTANT_ERROR and event.args and event.args['is_fatal']:
             sys.exit(1)
 

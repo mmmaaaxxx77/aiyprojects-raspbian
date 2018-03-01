@@ -53,6 +53,8 @@ class MyAssistant(object):
         self._can_start_conversation = False
         self._assistant = None
 
+        self._if_vlc = False
+
     def start(self):
         """Starts the assistant.
 
@@ -63,6 +65,14 @@ class MyAssistant(object):
     def say_ip(self):
         ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
         aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=10)
+
+    def play_youtube(self):
+        self._if_vlc = True
+        playshell = subprocess.Popen(["cvlc",
+                                      "--preferred-resolution", "240",
+                                      "https://www.youtube.com/watch?v=QYT8WYdPJYo"],
+                                     stdin=subprocess.PIPE,
+                                     stdout=subprocess.PIPE)
 
     def _run_task(self):
         credentials = aiy.assistant.auth_helpers.get_assistant_credentials()
@@ -93,6 +103,10 @@ class MyAssistant(object):
                 self._can_start_conversation = False
                 self._assistant.stop_conversation()
                 self.say_ip()
+            elif text == 'play youtube':
+                self._can_start_conversation = False
+                self._assistant.stop_conversation()
+                self.play_youtube()
 
         elif event.type == EventType.ON_END_OF_UTTERANCE:
             status_ui.status('thinking')
@@ -102,6 +116,9 @@ class MyAssistant(object):
               or event.type == EventType.ON_NO_RESPONSE):
             status_ui.status('ready')
             self._can_start_conversation = True
+
+            if self._if_vlc:
+                self._if_vlc = False
 
         elif event.type == EventType.ON_ASSISTANT_ERROR and event.args and event.args['is_fatal']:
             sys.exit(1)
@@ -113,6 +130,9 @@ class MyAssistant(object):
         # 2. The assistant library is already in a conversation.
         if self._can_start_conversation:
             self._assistant.start_conversation()
+
+        if self._if_vlc:
+            self._if_vlc = False
 
 
 def main():

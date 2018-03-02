@@ -46,11 +46,13 @@ class Speech:
     def get_volume(self):
         return int(aiy.audio.get_tts_volume() - 5)
 
-    def to_speech(self, text, lang='zh', per=3):
+    def to_speech(self, text, lang='zh', per=0):
         apiKey = config.get('BAIDU', 'api_key')
         secretKey = config.get('BAIDU', 'secret_key')
 
         aip = AipSpeech("10093734", apiKey, secretKey)
+
+        print(aiy.audio.get_tts_volume())
 
         _vol = int(aiy.audio.get_tts_volume() / (int(100 / 15) + 1))
         result = aip.synthesis(text=text, lang=lang, ctp=1, options={'vol': _vol, 'per': per})

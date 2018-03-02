@@ -43,17 +43,17 @@ logging.basicConfig(
 
 
 class Speech:
-    @staticmethod
-    def to_speech(text):
+    def get_volume(self):
+        return int(aiy.audio.get_tts_volume() - 5)
+
+    def to_speech(self, text, lang='zh', per=0):
         apiKey = config.get('BAIDU', 'api_key')
         secretKey = config.get('BAIDU', 'secret_key')
 
         aip = AipSpeech("10093734", apiKey, secretKey)
 
         _vol = int(aiy.audio.get_tts_volume() / (int(100 / 15)))
-
-        result = aip.synthesis(text=text, lang='zh', ctp=1, options={'vol': _vol, 'per': 0})
-
+        result = aip.synthesis(text=text, lang=lang, ctp=1, options={'vol': _vol, 'per': per})
         _filepath = "/tmp/response.mp3"
         if not isinstance(result, dict):
             with open(_filepath, 'wb') as f:
@@ -61,9 +61,22 @@ class Speech:
 
         _play = subprocess.Popen(["mpv",
                                   "--volume",
-                                  "{}".format(int(aiy.audio.get_tts_volume() - 5)),
+                                  "{}".format(self.get_volume()),
                                   _filepath])
         _play.wait()
+
+    def play_youtube(self, url):
+        # mpv --vid no --ytdl
+        playshell = subprocess.Popen(["mpv",
+                                      "--volume",
+                                      "{}".format(self.get_volume()),
+                                      "--vid",
+                                      "no",
+                                      "--ytdl",
+                                      url],
+                                     stdin=subprocess.PIPE,
+                                     stdout=subprocess.PIPE)
+        playshell.wait()
 
 
 class MyAssistant(object):
@@ -92,27 +105,31 @@ class MyAssistant(object):
         self._task.start()
 
     def say_ip(self):
+        self._if_vlc = True
         ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
         # aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=aiy.audio.get_tts_volume()/10)
-        self.baidu_speech.to_speech('My IP address is %s' % ip_address.decode('utf-8'))
+        self.baidu_speech.to_speech('My IP address is %s' % ip_address.decode('utf-8'), lang='en')
 
     def play_youtube(self):
-        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume() / 5))
         self._if_vlc = True
-        # mpv --vid no --ytdl
-        playshell = subprocess.Popen(["mpv",
-                                      "--volume",
-                                      "{}".format(int(aiy.audio.get_tts_volume() - 10)),
-                                      "--vid",
-                                      "no",
-                                      "--ytdl",
-                                      "https://www.youtube.com/watch?v=QYT8WYdPJYo"],
-                                     stdin=subprocess.PIPE,
-                                     stdout=subprocess.PIPE)
-        playshell.wait()
+        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume() / 5))
+        self.baidu_speech.play_youtube("https://www.youtube.com/watch?v=QYT8WYdPJYo")
 
     def play_news(self):
-        url = 'http://maps.googleapis.com/maps/api/directions/json'
+        self._if_vlc = True
+        _feedly_token = config.get('FEEDLY', 'token')
+        _h_value = "OAuth  {}".format(_feedly_token)
+        url = 'http://cloud.feedly.com/v3/streams/contents?count=5&streamId=user/b869fc6c-a570-42c0-b973-782f0fb0db18/category/News'  # noqa
+        _request = requests.get(url, headers={"Authorization": _h_value})
+        news_data = _request.json()
+
+        response = ""
+        _items = news_data['items']
+        for i in range(0, len(_items)):
+            _news = _items[i]
+            response += "第{}則，{}。\n".format(i+1, _news['title'])
+
+        self.baidu_speech.to_speech(response)
 
     def _run_task(self):
         credentials = aiy.assistant.auth_helpers.get_assistant_credentials()

@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 config = ConfigParser()
-for conf in ('config/config.conf',):
+for conf in ('config.conf',):
     _path = join(
         dirname(abspath(__file__)),
         conf,

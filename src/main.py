@@ -59,7 +59,8 @@ class Speech:
             with open(_filepath, 'wb') as f:
                 f.write(result)
 
-        _play = subprocess.Popen(["--volume",
+        _play = subprocess.Popen(["mpv",
+                                  "--volume",
                                   "{}".format(int(aiy.audio.get_tts_volume() - 5)),
                                   _filepath])
         _play.wait()

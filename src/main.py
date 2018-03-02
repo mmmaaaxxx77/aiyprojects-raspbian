@@ -32,11 +32,34 @@ import aiy.assistant.auth_helpers
 from aiy.assistant.library import Assistant
 import aiy.voicehat
 from google.assistant.library.event import EventType
+from aip.speech import AipSpeech
+import json, requests
+from config.config import config
 
 logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
 )
+
+
+class Speech:
+    @staticmethod
+    def to_speech(text):
+        apiKey = config.get('BAIDU', 'api_key')
+        secretKey = config.get('BAIDU', 'secret_key')
+
+        aip = AipSpeech("10093734", apiKey, secretKey)
+
+        _vol = int(aiy.audio.get_tts_volume()/(int(100/15)))
+
+        result = aip.synthesis(text=text, lang='zh', ctp=1, options={'vol': _vol, 'per': 0})
+
+        _filepath = "/tmp/response.wav"
+        if not isinstance(result, dict):
+            with open(_filepath, 'wb') as f:
+                f.write(result)
+
+        aiy.audio.play_wave(_filepath)
 
 
 class MyAssistant(object):
@@ -55,6 +78,8 @@ class MyAssistant(object):
 
         self._if_vlc = False
 
+        self.baidu_speech = Speech()
+
     def start(self):
         """Starts the assistant.
 
@@ -64,15 +89,16 @@ class MyAssistant(object):
 
     def say_ip(self):
         ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
-        aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=aiy.audio.get_tts_volume()/10)
+        #aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=aiy.audio.get_tts_volume()/10)
+        self.baidu_speech.to_speech('My IP address is %s' % ip_address.decode('utf-8'))
 
     def play_youtube(self):
-        aiy.audio.say("OK, Here you are.", volume=aiy.audio.get_tts_volume()/10)
+        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume()/5))
         self._if_vlc = True
         # mpv --vid no --ytdl
         playshell = subprocess.Popen(["mpv",
                                       "--volume",
-                                      "{}".format(aiy.audio.get_tts_volume()-15),
+                                      "{}".format(int(aiy.audio.get_tts_volume()-10)),
                                       "--vid",
                                       "no",
                                       "--ytdl",
@@ -80,6 +106,10 @@ class MyAssistant(object):
                                      stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE)
         playshell.wait()
+
+    def play_news(self):
+        url = 'http://maps.googleapis.com/maps/api/directions/json'
+
 
     def _run_task(self):
         credentials = aiy.assistant.auth_helpers.get_assistant_credentials()
@@ -114,6 +144,10 @@ class MyAssistant(object):
                 self._can_start_conversation = False
                 self._assistant.stop_conversation()
                 self.play_youtube()
+            elif text == 'give me some news':
+                self._can_start_conversation = False
+                self._assistant.stop_conversation()
+                self.play_news()
 
         elif event.type == EventType.ON_END_OF_UTTERANCE:
             status_ui.status('thinking')

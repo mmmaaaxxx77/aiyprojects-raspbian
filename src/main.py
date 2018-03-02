@@ -164,7 +164,7 @@ class MyAssistant(object):
                 self._can_start_conversation = False
                 self._assistant.stop_conversation()
                 self.play_youtube()
-            elif text == 'give me some news':
+            elif text == 'show me some news':
                 self._can_start_conversation = False
                 self._assistant.stop_conversation()
                 self.play_news()

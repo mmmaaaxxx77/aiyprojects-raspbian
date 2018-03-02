@@ -50,16 +50,19 @@ class Speech:
 
         aip = AipSpeech("10093734", apiKey, secretKey)
 
-        _vol = int(aiy.audio.get_tts_volume()/(int(100/15)))
+        _vol = int(aiy.audio.get_tts_volume() / (int(100 / 15)))
 
         result = aip.synthesis(text=text, lang='zh', ctp=1, options={'vol': _vol, 'per': 0})
 
-        _filepath = "/tmp/response.wav"
+        _filepath = "/tmp/response.mp3"
         if not isinstance(result, dict):
             with open(_filepath, 'wb') as f:
                 f.write(result)
 
-        aiy.audio.play_wave(_filepath)
+        _play = subprocess.Popen(["--volume",
+                                  "{}".format(int(aiy.audio.get_tts_volume() - 5)),
+                                  _filepath])
+        _play.wait()
 
 
 class MyAssistant(object):
@@ -89,16 +92,16 @@ class MyAssistant(object):
 
     def say_ip(self):
         ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
-        #aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=aiy.audio.get_tts_volume()/10)
+        # aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=aiy.audio.get_tts_volume()/10)
         self.baidu_speech.to_speech('My IP address is %s' % ip_address.decode('utf-8'))
 
     def play_youtube(self):
-        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume()/5))
+        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume() / 5))
         self._if_vlc = True
         # mpv --vid no --ytdl
         playshell = subprocess.Popen(["mpv",
                                       "--volume",
-                                      "{}".format(int(aiy.audio.get_tts_volume()-10)),
+                                      "{}".format(int(aiy.audio.get_tts_volume() - 10)),
                                       "--vid",
                                       "no",
                                       "--ytdl",
@@ -109,7 +112,6 @@ class MyAssistant(object):
 
     def play_news(self):
         url = 'http://maps.googleapis.com/maps/api/directions/json'
-
 
     def _run_task(self):
         credentials = aiy.assistant.auth_helpers.get_assistant_credentials()
@@ -187,4 +189,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

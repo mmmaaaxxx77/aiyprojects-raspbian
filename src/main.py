@@ -112,7 +112,7 @@ class MyAssistant(object):
 
     def play_youtube(self):
         self._if_vlc = True
-        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume() / 5))
+        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume()))
         self.baidu_speech.play_youtube("https://www.youtube.com/watch?v=QYT8WYdPJYo")
 
     def play_news(self):
@@ -129,7 +129,7 @@ class MyAssistant(object):
             _news = _items[i]
             response += "第{}則，{}。\n".format(i+1, _news['title'])
 
-        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume() / 5))
+        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume()))
         self.baidu_speech.to_speech(response)
 
     def _run_task(self):

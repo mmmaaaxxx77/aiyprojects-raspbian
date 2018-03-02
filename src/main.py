@@ -71,7 +71,7 @@ class Speech:
         # mpv --vid no --ytdl
         playshell = subprocess.Popen(["mpv",
                                       "--volume",
-                                      "{}".format(self.get_volume()/10),
+                                      "{}".format(self.get_volume()-10),
                                       "--vid",
                                       "no",
                                       "--ytdl",

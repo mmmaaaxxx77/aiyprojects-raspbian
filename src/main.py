@@ -46,13 +46,13 @@ class Speech:
     def get_volume(self):
         return int(aiy.audio.get_tts_volume() - 5)
 
-    def to_speech(self, text, lang='zh', per=0):
+    def to_speech(self, text, lang='zh', per=3):
         apiKey = config.get('BAIDU', 'api_key')
         secretKey = config.get('BAIDU', 'secret_key')
 
         aip = AipSpeech("10093734", apiKey, secretKey)
 
-        _vol = int(aiy.audio.get_tts_volume() / (int(100 / 15)))
+        _vol = int(aiy.audio.get_tts_volume() / (int(100 / 15) + 1))
         result = aip.synthesis(text=text, lang=lang, ctp=1, options={'vol': _vol, 'per': per})
         _filepath = "/tmp/response.mp3"
         if not isinstance(result, dict):
@@ -69,7 +69,7 @@ class Speech:
         # mpv --vid no --ytdl
         playshell = subprocess.Popen(["mpv",
                                       "--volume",
-                                      "{}".format(self.get_volume()),
+                                      "{}".format(self.get_volume()/10),
                                       "--vid",
                                       "no",
                                       "--ytdl",
@@ -112,7 +112,7 @@ class MyAssistant(object):
 
     def play_youtube(self):
         self._if_vlc = True
-        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume()/3))
+        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume() / 3))
         self.baidu_speech.play_youtube("https://www.youtube.com/watch?v=QYT8WYdPJYo")
 
     def play_news(self):
@@ -127,9 +127,9 @@ class MyAssistant(object):
         _items = news_data['items']
         for i in range(0, len(_items)):
             _news = _items[i]
-            response += "第{}則，{}。\n".format(i+1, _news['title'])
+            response += "第{}則，{}。\n".format(i + 1, _news['title'])
 
-        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume()/3))
+        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume() / 3))
         self.baidu_speech.to_speech(response)
 
     def _run_task(self):

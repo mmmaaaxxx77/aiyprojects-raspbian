@@ -108,7 +108,7 @@ class MyAssistant(object):
         self._if_vlc = True
         ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
         # aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'), volume=aiy.audio.get_tts_volume()/10)
-        self.baidu_speech.to_speech('My IP address is %s' % ip_address.decode('utf-8'), lang='en')
+        self.baidu_speech.to_speech('My IP address is %s' % ip_address.decode('utf-8'))
 
     def play_youtube(self):
         self._if_vlc = True

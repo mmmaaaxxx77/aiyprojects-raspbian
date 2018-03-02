@@ -119,7 +119,7 @@ class MyAssistant(object):
         self._if_vlc = True
         _feedly_token = config.get('FEEDLY', 'token')
         _h_value = "OAuth  {}".format(_feedly_token)
-        url = 'http://cloud.feedly.com/v3/streams/contents?count=5&streamId=user/b869fc6c-a570-42c0-b973-782f0fb0db18/category/News'  # noqa
+        url = 'http://cloud.feedly.com/v3/streams/contents?count=3&streamId=user/b869fc6c-a570-42c0-b973-782f0fb0db18/category/News'  # noqa
         _request = requests.get(url, headers={"Authorization": _h_value})
         news_data = _request.json()
 
@@ -129,6 +129,7 @@ class MyAssistant(object):
             _news = _items[i]
             response += "第{}則，{}。\n".format(i+1, _news['title'])
 
+        aiy.audio.say("OK, Here you are.", volume=int(aiy.audio.get_tts_volume() / 5))
         self.baidu_speech.to_speech(response)
 
     def _run_task(self):
